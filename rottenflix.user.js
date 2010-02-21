@@ -5,31 +5,13 @@
 // @include        http://www.netflix.com/*
 // ==/UserScript==
 
-/*************************************************************************************/
-// The code below is adapted from here: http://abeautifulsite.net/notebook/90
-// This technique for loading jQuery was necessary because @require would not work.
+// Netflix already loads jQuery (1.3.2 currently).
+// Just set up a $ function for convenience within this script.
+$ = unsafeWindow.jQuery;
 
-var GM_jQuery = document.createElement('script');
-GM_jQuery.src = 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js';
-GM_jQuery.type = 'text/javascript';
-document.getElementsByTagName('head')[0].appendChild(GM_jQuery);
+// check for new movie titles every two seconds
+setInterval(addRatings, 2000);
 
-function GM_wait() {
-  if (typeof unsafeWindow.jQuery == 'undefined') {
-    window.setTimeout(GM_wait, 100);
-  } else {
-    $ = unsafeWindow.jQuery;
-    GM_ready();
-  }
-}
-GM_wait();
-
-function GM_ready() {
-  setInterval(addRatings, 2000);
-}
-
-
-/**************************************************************************************/
 
 function addRatings() {
   // get all the movie title links on the page
