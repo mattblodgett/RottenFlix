@@ -151,14 +151,14 @@ function getMovieTitle(customElement) {
 function convertTitleToUrl(title) {
   var rtUrl = "http://www.rottentomatoes.com/m/";
   title = removeSubtitles(title);
-  title = title.toLowerCase().replace(/( |-)/g, "_").replace(/&/g, "and").replace(/('|,|\.|!|\?|\/|:|\[|\])/g, "").replace(/^(the|a|an)_/, "");
+  title = title.toLowerCase().replace(/( |-)/g, "_").replace(/&/g, "and").replace(/('|,|\.|!|\?|\/|:|\[|\]|\(|\))/g, "").replace(/^(the|a|an)_/, "");
   rtUrl += title + "/";
   return rtUrl;
 }
 
 
 function removeSubtitles(title) {
-  return title.replace(/(: Collector's Series|: Collector's Edition|: Director's Cut)/, "");
+  return title.replace(/(: Collector's Series|: Collector's Edition|: Director's Cut|: Special Edition)/, "");
 }
 
 
