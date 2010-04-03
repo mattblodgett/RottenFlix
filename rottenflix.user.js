@@ -151,7 +151,12 @@ function getMovieTitle(customElement) {
 function convertTitleToUrl(title) {
   var rtUrl = "http://www.rottentomatoes.com/m/";
   title = removeSubtitles(title);
-  title = title.toLowerCase().replace(/( |-)/g, "_").replace(/&/g, "and").replace(/('|,|\.|!|\?|\/|:|\[|\]|\(|\))/g, "").replace(/^(the|a|an)_/, "");
+  title = title.toLowerCase();
+  title = replaceWordSeparators(title);
+  title = replaceAmpersands(title);
+  title = removeExtraneousCharacters(title);
+  title = removeLeadingArticle(title);
+  title = replaceAccentedLetters(title);
   rtUrl += title + "/";
   return rtUrl;
 }
@@ -159,6 +164,31 @@ function convertTitleToUrl(title) {
 
 function removeSubtitles(title) {
   return title.replace(/(: Collector's Series|: Collector's Edition|: Director's Cut|: Special Edition)/, "");
+}
+
+
+function replaceWordSeparators(title) {
+  return title.replace(/( |-)/g, "_");
+}
+
+
+function replaceAmpersands(title) {
+  return title.replace(/&/g, "and");
+}
+
+
+function removeExtraneousCharacters(title) {
+  return title.replace(/('|,|\.|!|\?|\/|:|\[|\]|\(|\))/g, "");
+}
+
+
+function removeLeadingArticle(title) {
+  return title.replace(/^(the|a|an)_/, "");
+}
+
+
+function replaceAccentedLetters(title) {
+  return title.replace(/(é|è)/g, "e");
 }
 
 
