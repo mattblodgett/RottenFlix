@@ -2,7 +2,7 @@
 // @name           RottenFlix
 // @namespace      http://www.mattblodgett.com/
 // @description    Integrates Rotten Tomatoes ratings with Netflix.com
-// @include        http://www.netflix.com/*
+// @include        http://*.netflix.com/*
 // ==/UserScript==
 
 // Netflix already loads jQuery (1.3.2 currently).
@@ -24,10 +24,16 @@ function addRatings() {
     // do we actually have a movie title to work with here?
     if (title) {
       $(titleLink).addClass("rottenFlixWasHere");
+      $(titleLink).closest(".title").css("width", "180px").css("height", "inherit");
+      $(titleLink).css("position", "static");
     
       // create a container element to hold our custom stuff
       var container = $("<span>");
-      container.css("margin-left", "4px");
+      if ($(titleLink).is(".agMovieGrid a")) {
+        container.css("margin-left", "4px");
+      } else {
+        container.css("margin-left", "1px");
+      }
       
       // create a tomato image element
       var tomatoImage = $(createTomatoImage());
@@ -81,7 +87,7 @@ function getReviewStatusFromRating(rawRating) {
   
   if (rawRating === null) {
     reviewStatus = "reviewNotFound";
-  } else if (rawRating === "N/A") {
+  } else if (rawRating.indexOf("No") >= 0) {
     reviewStatus = "reviewNA";
   } else {
     reviewStatus = "reviewNumber";
@@ -95,26 +101,30 @@ function createRatingElement(rawRating, movieTitle) {
   var ratingElement = $("<a>");
   var html = "";
   var tooltip = "";
+  var href = "";
 
   var reviewStatus = getReviewStatusFromRating(rawRating);
   switch (reviewStatus) {
     case "reviewNotFound":
       html = "?";
       tooltip = "Search for this movie on Rotten Tomatoes";
+      href = "http://www.rottentomatoes.com/search/full_search.php?search=" + movieTitle;
       break;
     case "reviewNA":
-      html = rawRating;
+      html = "N/A";
       tooltip = "View the page for this movie on Rotten Tomatoes";
+      href = convertTitleToUrl(movieTitle)
       break;
     case "reviewNumber":
       html = rawRating + "%";
       tooltip = "View the page for this movie on Rotten Tomatoes";
+      href = convertTitleToUrl(movieTitle);
       break;
   }
   
-  ratingElement.css("color", getColorFromRating(rawRating));
+  ratingElement.css("color", getColorFromRating(rawRating)).css("position", "static");
   ratingElement.html(html);
-  ratingElement.attr("href", convertTitleToUrl(movieTitle));
+  ratingElement.attr("href", href);
   ratingElement.attr("target", "_blank");
   ratingElement.attr("title", tooltip);
   
@@ -143,7 +153,7 @@ function getColorFromRating(rawRating) {
 
 function getMovieTitle(customElement) {
   var movieTitleAnchor = customElement.parents(".title").children("a");
-  var movieTitle = movieTitleAnchor.text();
+  var movieTitle = movieTitleAnchor.text().trim();
   return movieTitle;
 }
 
@@ -210,7 +220,7 @@ function fetchRating(elementToReplaceWithRating, rtUrl) {
       responseHTML = deSrcHTML(responseHTML);
       
       // parse out the rating text from the HTML
-      var rating = $('#tomatometer_score span', responseHTML).html();
+      var rating = $('#all-critics-meter', responseHTML).html();
       
       var movieTitle = getMovieTitle(elementToReplaceWithRating);
       
